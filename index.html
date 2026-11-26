@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>50-Item Practice Quiz: Databases, Networking &amp; IT in the Workplace</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: rgba(148, 163, 184, 0.25);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --success: #22c55e;
+      --error: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(160deg, #1e293b 0%, var(--bg) 55%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 840px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.4rem;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .score-banner {
+      display: none;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.75rem;
+      text-align: center;
+    }
+
+    .score-banner.visible {
+      display: block;
+    }
+
+    .score-banner h2 {
+      font-size: 1.4rem;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+
+    .topic-heading {
+      margin: 2.2rem 0 1rem;
+      font-size: 1.2rem;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.45rem;
+    }
+
+    .question-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.35rem;
+      margin-bottom: 1rem;
+    }
+
+    .question-text {
+      font-weight: 600;
+      margin-bottom: 0.9rem;
+      font-size: 1.02rem;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      cursor: pointer;
+    }
+
+    .option-label:hover {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: rgba(56, 189, 248, 0.45);
+    }
+
+    .option-label input[type="radio"] {
+      accent-color: var(--accent);
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .option-label.correct {
+      background: rgba(34, 197, 94, 0.18);
+      border-color: var(--success);
+    }
+
+    .option-label.incorrect {
+      background: rgba(239, 68, 68, 0.18);
+      border-color: var(--error);
+    }
+
+    .explanation {
+      display: none;
+      margin-top: 0.8rem;
+      padding-top: 0.7rem;
+      border-top: 1px dashed var(--border);
+      font-size: 0.92rem;
+      color: #cbd5e1;
+    }
+
+    .explanation.visible {
+      display: block;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.85rem;
+      justify-content: center;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: var(--accent);
+      color: #0f172a;
+      font-weight: 700;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background: var(--accent-hover);
+    }
+
+    button.secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    button.secondary:hover {
+      background: rgba(148, 163, 184, 0.14);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Introduction to Databases, Networking &amp; IT in the Workplace</h1>
+      <p>Interactive 50-item multiple-choice practice exam</p>
+    </header>
+
+    <div id="scoreBanner" class="score-banner" aria-live="polite">
+      <h2 id="scoreText"></h2>
+      <p id="scoreSubtext"></p>
+    </div>
+
+    <form id="quizForm">
+      <div id="quizContainer"></div>
+
+      <div class="actions">
+        <button type="submit" id="checkBtn">Check Answers</button>
+        <button type="button" id="resetBtn" class="secondary">Reset Quiz</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    (function () {
+      const quizData = [
+        {
+          topic: "Topic 1: Introduction to Databases (Questions 1-17)",
+          q: "1. What is a database?",
+          options: [
+            "A) A single spreadsheet used only for accounting",
+            "B) A collection of organized data, information, and records",
+            "C) A hardware component that stores operating system files",
+            "D) A software program used exclusively to browse websites"
+          ],
+          answer: 1,
+          explain: "A database is a collection of organized data, information, and records."
+        },
+        {
+          topic: "Topic 1: Introduction to Databases (Questions 1-17)",
+          q: "2. According to the lecture, where does the real power and purpose of information lie?",
+          options: [
+            "A) Only in collecting large amounts of raw numbers",
+            "B) Only in storing files inside a folder",
+            "C) Not only in collecting and finding information, but more importantly in using it",
+            "D) In deleting old records every week"
+          ],
+          answer: 2,
+          explain: "The power and purpose of information lie not only in collecting and finding it, but more importantly in using it."
+        },
+        {
+          topic: "Topic 1: Introduction to Databases (Questions 1-17)",
+          q: "3. Which of the following is an example of a structured database?",
+          options: [
+            "A) Loose files created across several unrelated computer programs",
+            "B) Random pages across the World Wide Web",
+            "C) A medical database of patients' data or a company inventory arranged in a uniform format",
+            "D) Unorganized notes saved in a text editor"
+          ],
+          answer: 2,
+          explain: "Structured databases arrange records or files in a uniform format, such as patient medical records or company inventories."
+        },
+        {
+          topic: "Topic 1: Introduction to Databases (Questions 1-17)",
+          q: "4. Which of the following best describes a free-form database?",
+          options: [
+            "A) A loose collection of information, such as content on the World Wide Web or documents made from several programs",
+            "B) A strict relational table with enforced primary and foreign keys",
+            "C) A static warehouse used strictly for 10-year projections",
+            "D) A single column of numeric values"
+          ],
+          answer: 0,
+          explain: "Free-form databases are loose collections of information, like data on the World Wide Web or documents created across multiple programs."
+        },
+        {
+          topic: "Topic 1: Introduction to Databases (Questions 1-17)",
+          q: "5. Which database type is dynamic and used by an organization for day-to-day operations such as collecting, maintaining, modifying, and deleting data?",
+          options: [
+            "A) Analytical database",
+            "B) Operational database",
+            "C) Free-form database",
+            "D) Virtual database"
+          ],
+          answer: 1,
+          explain: "Operational databases are dynamic and support day-to-day operations by collecting, maintaining, modifying, and deleting data."
+        },
+        {
+          topic: "Topic 1: Introduction to Databases (Questions 1-17)",
+          q: "6. Which database type is static, rarely modified, and often used to store historical data for long-term projections and analysis?",
+          options: [
+            "A) Operational database",
+            "B) Analytical database",
+            "C) Transactional database",
+            "D) Local database"
+          ],
+          answer: 1,
+          explain: "Analytical databases are static, rarely modified, and used for tracking historical data and long-term analysis."
+        },
+        {
+          topic: "Topic 1: Introduction to Databases (Questions 1-17)",
+          q: "7. In the hierarchical database model, how are parent-child relationships structured and how is data accessed?",
+          options: [
+            "A) Data can be accessed from any table; a child can have multiple parents",
+            "B) Access passes through the root table; a child may only have one parent, while a parent can have several children",
+            "C) Data is stored as flat text files with no hierarchy",
+            "D) Children act as the root and parents act as leaves"
+          ],
+          answer: 1,
+          explain: "In the hierarchical model, each child has only one parent, a parent can have multiple children, and access passes through the root."
+        },
+        {
+          topic: "Topic 1: Introduction to Databases (Questions 1-17)",
+          q: "8. How does the network database model differ from the hierarchical model?",
+          options: [
+            "A) It forbids any relationships between tables",
+            "B) It allows a child to have multiple parents and allows data access from any table, rather than starting strictly from the root table",
+            "C) It only supports one table per database",
+            "D) It was invented before the 1960s for smartphones"
+          ],
+          answer: 1,
+          explain: "The network model allows multiple parents for a child and lets users access data from any table rather than only via the root."
+        },
+        {
+          topic: "Topic 1: Introduction to Databases (Questions 1-17)",
+          q: "9. Who developed the relational database model in the 1970s?",
+          options: [
+            "A) Peter Chen",
+            "B) Dr. E. F. Codd of IBM",
+            "C) Tim Berners-Lee",
+            "D) Grace Hopper"
+          ],
+          answer: 1,
+          explain: "Dr. E. F. Codd of IBM introduced the relational database model in the 1970s."
+        },
+        {
+          topic: "Topic 1: Introduction to Databases (Questions 1-17)",
+          q: "10. In the relational model, what are a relation, an attribute, and a domain?",
+          options: [
+            "A) Relation = row; Attribute = database; Domain = password",
+            "B) Relation = table with columns and rows; Attribute = column name; Domain = allowed values for an attribute",
+            "C) Relation = index; Attribute = server; Domain = IP address",
+            "D) Relation = query; Attribute = primary key; Domain = backup"
+          ],
+          answer: 1,
+          explain: "A relation is a table of rows and columns, attributes name the columns, and domain defines the values an attribute takes."
+        },
+        {
+          topic: "Topic 1: Introduction to Databases (Questions 1-17)",
+          q: "11. Who introduced the Entity-Relationship (ER) model in 1976?",
+          options: [
+            "A) Peter Chen",
+            "B) Dr. E. F. Codd",
+            "C) Raymond Boyce",
+            "D) Edgar Frank"
+          ],
+          answer: 0,
+          explain: "Peter Chen introduced the Entity-Relationship model in 1976 as an abstract and conceptual representation of data."
+        },
+        {
+          topic: "Topic 1: Introduction to Databases (Questions 1-17)",
+          q: "12. How does the dimensional model represent data in data warehouses?",
+          options: [
+            "A) By splitting data into hundreds of unlinked text files",
+            "B) By using a single large table of information with dimensions (where, who, what type) and measures (quantity)",
+            "C) By storing only audio and video files",
+            "D) By using only one-to-one relationships without keys"
+          ],
+          answer: 1,
+          explain: "The dimensional model adapts relational concepts using dimensions (who, where, what type) and measures (quantity)."
+        },
+        {
+          topic: "Topic 1: Introduction to Databases (Questions 1-17)",
+          q: "13. What does the object-relational model attempt to combine?",
+          options: [
+            "A) Hardware assembly and printer drivers",
+            "B) The relational model and the object-oriented programming paradigm",
+            "C) Circuit switching and dial-up modems",
+            "D) Spreadsheets and word processors"
+          ],
+          answer: 1,
+          explain: "The object-relational model combines the relational model with object-oriented programming concepts."
+        },
+        {
+          topic: "Topic 1: Introduction to Databases (Questions 1-17)",
+          q: "14. What is the role of the SQL component in a Relational Database Management System (RDBMS)?",
+          options: [
+            "A) It physically cools the computer server",
+            "B) It creates the relational database and its structures, and supports managing/querying data",
+            "C) It replaces the operating system kernel",
+            "D) It blocks all network traffic"
+          ],
+          answer: 1,
+          explain: "The SQL component in an RDBMS creates the relational database and its structures."
+        },
+        {
+          topic: "Topic 1: Introduction to Databases (Questions 1-17)",
+          q: "15. How is data contrasted with information in the lecture?",
+          options: [
+            "A) Data is dynamic and meaningful; information is static and raw",
+            "B) Data is static until modified and consists of values/numbers stored in a database; information is processed data that is relevant, meaningful, and dynamic",
+            "C) Data and information mean the exact same thing in all contexts",
+            "D) Data is always text, while information is always a number"
+          ],
+          answer: 1,
+          explain: "Data is static until changed, while information is processed data that becomes relevant, meaningful, and dynamic."
+        },
+        {
+          topic: "Topic 1: Introduction to Databases (Questions 1-17)",
+          q: "16. What is a NULL value, and what is a view?",
+          options: [
+            "A) NULL is zero (0); a view is a physical backup copy",
+            "B) NULL is a blank space; a view is a primary key",
+            "C) NULL represents an unknown or missing value (neither zero nor blank); a view is a virtual table pulling fields from one or more tables without holding data on its own",
+            "D) NULL deletes a record; a view deletes a column"
+          ],
+          answer: 2,
+          explain: "NULL means unknown or missing (not zero or blank), and a view is a virtual table built from fields of underlying tables."
+        },
+        {
+          topic: "Topic 1: Introduction to Databases (Questions 1-17)",
+          q: "17. Which statement correctly distinguishes a primary key, a foreign key, and a linking table?",
+          options: [
+            "A) A primary key uniquely identifies a record; a foreign key establishes a relationship between tables; a linking table connects two or more tables",
+            "B) A primary key can have duplicate values; a foreign key is always blank; a linking table stores passwords",
+            "C) A primary key is only for views; a foreign key replaces all columns; a linking table is a hardware cable",
+            "D) All three terms mean the exact same thing"
+          ],
+          answer: 0,
+          explain: "Primary keys uniquely identify records, foreign keys relate tables, and linking tables establish connections across tables."
+        },
+        {
+          topic: "Topic 2: Networking and the Internet (Questions 18-34)",
+          q: "18. What is a computer network system?",
+          options: [
+            "A) A single standalone computer with no peripherals",
+            "B) An interconnection of two or more computers that allows sharing of information and resources",
+            "C) A program used only to edit photos",
+            "D) A type of monitor cable"
+          ],
+          answer: 1,
+          explain: "A computer network system connects two or more computers so they can share information and resources."
+        },
+        {
+          topic: "Topic 2: Networking and the Internet (Questions 18-34)",
+          q: "19. Which network type typically covers a very short range (around 1 to 10 meters) around an individual and their personal devices?",
+          options: [
+            "A) PAN (Personal Area Network)",
+            "B) LAN (Local Area Network)",
+            "C) MAN (Metropolitan Area Network)",
+            "D) WAN (Wide Area Network)"
+          ],
+          answer: 0,
+          explain: "A Personal Area Network (PAN) links personal devices around an individual, typically within a 10-meter range."
+        },
+        {
+          topic: "Topic 2: Networking and the Internet (Questions 18-34)",
+          q: "20. Which network connects devices within a limited area such as a home, building, office, or school campus?",
+          options: [
+            "A) PAN",
+            "B) LAN",
+            "C) WAN",
+            "D) VPN"
+          ],
+          answer: 1,
+          explain: "A Local Area Network (LAN) shares communication lines among devices within a limited area such as a building or campus."
+        },
+        {
+          topic: "Topic 2: Networking and the Internet (Questions 18-34)",
+          q: "21. Which network connects LANs across a city, town, or large multi-building region (such as roughly 5 to 50 km or metropolitan area)?",
+          options: [
+            "A) PAN",
+            "B) LAN",
+            "C) MAN (Metropolitan Area Network)",
+            "D) USB network"
+          ],
+          answer: 2,
+          explain: "A Metropolitan Area Network (MAN) connects LANs across a city, town, or large multi-building area."
+        },
+        {
+          topic: "Topic 2: Networking and the Internet (Questions 18-34)",
+          q: "22. Which network spans wide geographic areas—such as countries, continents, or the entire world—and is often made up of multiple LANs, PANs, and WANs?",
+          options: [
+            "A) PAN",
+            "B) LAN",
+            "C) MAN",
+            "D) WAN (Wide Area Network)"
+          ],
+          answer: 3,
+          explain: "A Wide Area Network (WAN) spans large geographic areas and can consist of multiple LANs, PANs, and WANs."
+        },
+        {
+          topic: "Topic 2: Networking and the Internet (Questions 18-34)",
+          q: "23. What was ARPANET in the 1960s?",
+          options: [
+            "A) A mobile gaming app",
+            "B) An early network collaboration involving the Department of Defense, military research, government labs, and US universities",
+            "C) A web browser released in 2018",
+            "D) A database query language"
+          ],
+          answer: 1,
+          explain: "ARPANET began in the 1960s as a collaboration involving the Department of Defense, military research, government labs, and US universities."
+        },
+        {
+          topic: "Topic 2: Networking and the Internet (Questions 18-34)",
+          q: "24. What is Internet2, and what is PREGINET in the Philippines?",
+          options: [
+            "A) Internet2 is a 1996 non-profit networking consortium started by 34 US universities for research/education; PREGINET is the Philippine research, education, and government information network reachable via Internet2",
+            "B) Internet2 is a paid streaming service; PREGINET is a spreadsheet tool",
+            "C) Internet2 is a hardware router brand; PREGINET is a computer virus",
+            "D) Both are programming languages used only for mobile games"
+          ],
+          answer: 0,
+          explain: "Internet2 (1996) supports research and education networking, and PREGINET connects Philippine research, education, and government peers via Internet2."
+        },
+        {
+          topic: "Topic 2: Networking and the Internet (Questions 18-34)",
+          q: "25. How does data travel across the Internet according to the lecture?",
+          options: [
+            "A) As one giant unbreakable file that cannot be split",
+            "B) By breaking information into small pieces called data packets that move through wired or wireless transmission media to reach their destination",
+            "C) Only through printed paper mail",
+            "D) Exclusively by satellite without cables"
+          ],
+          answer: 1,
+          explain: "Information is broken into small pieces called data packets that travel over wired or wireless media to reach their destination."
+        },
+        {
+          topic: "Topic 2: Networking and the Internet (Questions 18-34)",
+          q: "26. Why is packet switching more efficient than circuit switching for general data communication?",
+          options: [
+            "A) Packet switching does not require a permanent dedicated connection and lets packets travel independently across routes, avoiding locking up a whole channel",
+            "B) Circuit switching sends data in tiny packets that never reassemble",
+            "C) Packet switching only works for landline voice calls",
+            "D) Circuit switching uses less bandwidth during heavy traffic"
+          ],
+          answer: 0,
+          explain: "Packet switching sends independent packets that route around congestion and reassemble at the destination without holding a dedicated circuit."
+        },
+        {
+          topic: "Topic 2: Networking and the Internet (Questions 18-34)",
+          q: "27. What is a server versus a client on the Internet?",
+          options: [
+            "A) A client delivers data to servers; a server only browses websites",
+            "B) A server processes requests and delivers data/services to clients; a client is a device or application that requests content or services from a server",
+            "C) A server is always a smartphone; a client is always a router",
+            "D) There is no difference between a client and a server"
+          ],
+          answer: 1,
+          explain: "Servers process requests and deliver data/services, while clients request content or services from servers."
+        },
+        {
+          topic: "Topic 2: Networking and the Internet (Questions 18-34)",
+          q: "28. What do Active Directory Domain Services (AD DS) and the Domain Name System (DNS) do?",
+          options: [
+            "A) AD DS holds user/computer accounts, organizational units, and application services; DNS translates human-readable domain names into IP addresses",
+            "B) AD DS translates domain names; DNS formats hard drives",
+            "C) AD DS is a web browser; DNS is an antivirus program",
+            "D) Both are used strictly for printing documents"
+          ],
+          answer: 0,
+          explain: "AD DS manages accounts, organizational units, and application services, while DNS resolves domain names to IP addresses."
+        },
+        {
+          topic: "Topic 2: Networking and the Internet (Questions 18-34)",
+          q: "29. What do a file server, a print server, and a router do?",
+          options: [
+            "A) File server holds/manages documents; print server connects printers, queues print jobs, and sends them to printers; router receives, analyzes, and forwards packets between networks",
+            "B) File server prints pages; print server routes packets; router stores passwords",
+            "C) File server blocks Wi-Fi; print server edits video; router compiles code",
+            "D) All three perform the exact same function on a single PC"
+          ],
+          answer: 0,
+          explain: "A file server manages documents, a print server queues and sends print jobs, and a router receives, analyzes, and routes packets."
+        },
+        {
+          topic: "Topic 2: Networking and the Internet (Questions 18-34)",
+          q: "30. Which three core technologies are listed for the World Wide Web (WWW)?",
+          options: [
+            "A) HTML, HTTP, and Web Servers / Web Browsers",
+            "B) C++, SQL, and BIOS",
+            "C) FTP, SMTP, and RAID",
+            "D) CSS, Excel, and PDF"
+          ],
+          answer: 0,
+          explain: "The WWW relies on HTML, HTTP, and web servers/web browsers."
+        },
+        {
+          topic: "Topic 2: Networking and the Internet (Questions 18-34)",
+          q: "31. What are the four basic stages of web operation listed in the lecture?",
+          options: [
+            "A) Plan, code, test, deploy",
+            "B) Connection, request, response, and close",
+            "C) Search, filter, sort, print",
+            "D) Boot, login, save, shutdown"
+          ],
+          answer: 1,
+          explain: "Web operation follows four stages: connection, request, response, and close."
+        },
+        {
+          topic: "Topic 2: Networking and the Internet (Questions 18-34)",
+          q: "32. How do subject directories differ from search engines?",
+          options: [
+            "A) Subject directories are curated by human editors, whereas search engines use automated spiders or bots to index web content",
+            "B) Subject directories use bots; search engines only use human editors",
+            "C) Search engines cannot search websites",
+            "D) Subject directories only return images"
+          ],
+          answer: 0,
+          explain: "Subject directories rely on human editors, while search engines use automated spiders or bots to index web pages."
+        },
+        {
+          topic: "Topic 2: Networking and the Internet (Questions 18-34)",
+          q: "33. Which Google search techniques are highlighted in the lecture?",
+          options: [
+            "A) Double quotes for exact phrases, asterisk (*) as a wildcard for unknown words, and minus sign (-) to exclude words (plus vs, DEFINE, keyword specifics, and image search)",
+            "B) Using exclamation marks (!) to delete the Internet",
+            "C) Typing only single letters with no spaces",
+            "D) Refreshing the browser ten times"
+          ],
+          answer: 0,
+          explain: "The slides highlight exact phrase quotes, wildcard (*), minus (-) to exclude words, 'vs', DEFINE, keyword specifics, and image search."
+        },
+        {
+          topic: "Topic 2: Networking and the Internet (Questions 18-34)",
+          q: "34. Which set correctly pairs network security threats with prevention methods from the lecture?",
+          options: [
+            "A) Phishing (pretending to be a trustworthy entity, often via email) -> spam filters, avoiding suspicious emails, awareness training; MITM (intercepting communication) -> encryption, secure Wi-Fi, VPNs; DoS (overwhelming resources) -> firewalls, traffic filtering, anti-DDoS",
+            "B) Phishing -> anti-DDoS only; DoS -> spam filters only; Insider threats -> ignoring access controls",
+            "C) MITM -> deleting the operating system; Phishing -> sharing passwords publicly",
+            "D) Malware -> turning off software updates"
+          ],
+          answer: 0,
+          explain: "Each threat aligns with its listed controls: spam filters/training for phishing, encryption/VPNs for MITM, and firewalls/filtering/anti-DDoS for DoS."
+        },
+        {
+          topic: "Topic 3: IT in the Workplace (Questions 35-50)",
+          q: "35. What is the workplace transformation formula presented in the lecture?",
+          options: [
+            "A) People + processes + technology = workplace transformation",
+            "B) Hardware + budget + marketing = workplace transformation",
+            "C) Code + servers + cables = workplace transformation",
+            "D) Meetings + emails + reports = workplace transformation"
+          ],
+          answer: 0,
+          explain: "Workplace transformation is summarized as People + processes + technology."
+        },
+        {
+          topic: "Topic 3: IT in the Workplace (Questions 35-50)",
+          q: "36. Which of the following is a core element of \"IT in the Workplace\"?",
+          options: [
+            "A) People (employees, clients, IT teams), Processes (tasks, workflows, decisions), and Technology (systems, apps, infrastructure)",
+            "B) Only physical office furniture",
+            "C) Only paper filing cabinets",
+            "D) Only social media influencers"
+          ],
+          answer: 0,
+          explain: "Workplace IT brings together people, processes, and technology to support organizational operations and productivity."
+        },
+        {
+          topic: "Topic 3: IT in the Workplace (Questions 35-50)",
+          q: "37. Which industries or sectors are listed as users of workplace IT?",
+          options: [
+            "A) Education, healthcare, banking, government, business, and IT companies",
+            "B) Only agriculture and mining",
+            "C) Only deep-sea fishing",
+            "D) Only astronomy observatories"
+          ],
+          answer: 0,
+          explain: "The lecture lists education, healthcare, banking, government, business, and IT companies."
+        },
+        {
+          topic: "Topic 3: IT in the Workplace (Questions 35-50)",
+          q: "38. Which comparison accurately contrasts a Traditional workplace with an IT-Enabled workplace?",
+          options: [
+            "A) Traditional: digital/cloud storage and remote work; IT-Enabled: paper records and face-to-face only",
+            "B) Traditional: paper records, manual computation, physical file storage, manual reporting; IT-Enabled: digital records, automated computation, digital/cloud storage, automated dashboards",
+            "C) Traditional: automated dashboards; IT-Enabled: no networks",
+            "D) There are no differences between them"
+          ],
+          answer: 1,
+          explain: "IT-enabled workplaces shift from paper records, manual work, physical files, and manual reports to digital/cloud workflows and automated dashboards."
+        },
+        {
+          topic: "Topic 3: IT in the Workplace (Questions 35-50)",
+          q: "39. Which tools are listed under Productivity, Development, and Work management?",
+          options: [
+            "A) Productivity: Word, Excel, PowerPoint; Development: VS Code, IntelliJ IDEA; Work management: Jira, Trello, Figma",
+            "B) Productivity: Jira, Trello; Development: Excel; Work management: Word",
+            "C) Productivity: MySQL; Development: PowerPoint; Work management: Zoom",
+            "D) Productivity: GitHub; Development: Slack; Work management: Chrome"
+          ],
+          answer: 0,
+          explain: "Word/Excel/PowerPoint cover productivity, VS Code/IntelliJ IDEA cover development, and Jira/Trello/Figma cover work management."
+        },
+        {
+          topic: "Topic 3: IT in the Workplace (Questions 35-50)",
+          q: "40. Which relational and NoSQL database systems are mentioned in the workplace IT slides?",
+          options: [
+            "A) Relational: MySQL, PostgreSQL, SQL Server, Oracle; NoSQL: MongoDB",
+            "B) Relational: MongoDB; NoSQL: Word and Excel",
+            "C) Relational: Zoom and Teams; NoSQL: Figma",
+            "D) Relational: Photoshop; NoSQL: Notepad"
+          ],
+          answer: 0,
+          explain: "MySQL, PostgreSQL, SQL Server, and Oracle are listed under relational databases, while MongoDB is listed under NoSQL."
+        },
+        {
+          topic: "Topic 3: IT in the Workplace (Questions 35-50)",
+          q: "41. What are examples of cloud computing platforms and uses mentioned in the lecture?",
+          options: [
+            "A) AWS, Microsoft Azure, and Google Cloud; used for cloud storage, hosted databases, virtual servers, backups, and deployment",
+            "B) AWS, Paint, and Calculator; used only for offline gaming",
+            "C) Azure, WordPad, and Snipping Tool; used only for printing",
+            "D) Google Cloud, BIOS, and CMOS; used only for cooling fans"
+          ],
+          answer: 0,
+          explain: "AWS, Microsoft Azure, and Google Cloud support cloud storage, hosted databases, virtual servers, backups, and deployment."
+        },
+        {
+          topic: "Topic 3: IT in the Workplace (Questions 35-50)",
+          q: "42. How do Teams, Meet, Zoom, Slack, and GitHub support workplace collaboration?",
+          options: [
+            "A) Teams, Meet, Zoom, and Slack support communication; GitHub supports code sharing, review, issue tracking, and version control",
+            "B) GitHub is a video call app; Zoom is a database engine",
+            "C) Slack is a hard drive; Meet is a text editor",
+            "D) All of them are used strictly for accounting ledgers"
+          ],
+          answer: 0,
+          explain: "Teams, Meet, Zoom, and Slack facilitate communication, while GitHub supports code sharing, review, issue tracking, and version control."
+        },
+        {
+          topic: "Topic 3: IT in the Workplace (Questions 35-50)",
+          q: "43. What are the 7 stages of the Software Development Life Cycle (SDLC) in order?",
+          options: [
+            "A) Planning -> Requirements -> Design -> Development -> Testing -> Deployment -> Maintenance",
+            "B) Design -> Planning -> Coding -> Testing -> Sales -> Support -> Retirement",
+            "C) Requirements -> Coding -> Design -> Deployment -> Testing -> Planning -> Maintenance",
+            "D) Planning -> Testing -> Design -> Development -> Requirements -> Deployment -> Maintenance"
+          ],
+          answer: 0,
+          explain: "The SDLC sequence is Planning, Requirements, Design, Development, Testing, Deployment, and Maintenance."
+        },
+        {
+          topic: "Topic 3: IT in the Workplace (Questions 35-50)",
+          q: "44. Which set lists roles where BSCS graduates can contribute?",
+          options: [
+            "A) Software Developer, Web/Mobile Developer, Database Administrator, Cybersecurity Professional, Data Analyst/Scientist, AI/ML Developer, Systems Analyst, IT Project Manager",
+            "B) Chef, Pilot, Architect, Surgeon",
+            "C) Carpenter, Florist, Tailor, Baker",
+            "D) Referee, Musician, Painter, Sculptor"
+          ],
+          answer: 0,
+          explain: "The career slide highlights roles including software/web/mobile developers, DBAs, cybersecurity, data/AI roles, systems analysts, and IT project managers."
+        },
+        {
+          topic: "Topic 3: IT in the Workplace (Questions 35-50)",
+          q: "45. Which skills are listed under Interpersonal and Work habits beyond programming?",
+          options: [
+            "A) Interpersonal: communication, teamwork, leadership, empathy, collaboration; Work habits: time management, adaptability, lifelong learning",
+            "B) Interpersonal: SQL and Python; Work habits: subnetting and hashing",
+            "C) Interpersonal: soldering; Work habits: overclocking",
+            "D) Interpersonal: compressing ZIP files; Work habits: formatting drives"
+          ],
+          answer: 0,
+          explain: "Interpersonal skills include communication, teamwork, leadership, empathy, and collaboration; work habits include time management, adaptability, and lifelong learning."
+        },
+        {
+          topic: "Topic 3: IT in the Workplace (Questions 35-50)",
+          q: "46. Which ethical and legal responsibilities of IT professionals are highlighted in the lecture?",
+          options: [
+            "A) Collecting as much personal data as possible and ignoring privacy laws",
+            "B) Privacy (including the Philippine Data Privacy Act of 2012 / RA 10173), respecting intellectual property/copyrights/licenses, responsible AI use, and accountability for reliable, secure, accessible systems",
+            "C) Copying proprietary code without attribution",
+            "D) Hiding security vulnerabilities from management"
+          ],
+          answer: 1,
+          explain: "Key responsibilities include data privacy (RA 10173), intellectual property respect, responsible AI use, and system accountability."
+        },
+        {
+          topic: "Topic 3: IT in the Workplace (Questions 35-50)",
+          q: "47. Which risks or work impacts are listed as workplace IT challenges?",
+          options: [
+            "A) Cyberattacks, privacy concerns, system downtime, technology dependence, skills gaps, digital overload, rapid change, automation-related job shifts, and software failures",
+            "B) Zero software failures and zero security risks",
+            "C) Only hardware weight",
+            "D) Only office plant care"
+          ],
+          answer: 0,
+          explain: "Workplace IT challenges include security/privacy/downtime risks alongside digital overload, rapid change, skills gaps, and automation shifts."
+        },
+        {
+          topic: "Topic 3: IT in the Workplace (Questions 35-50)",
+          q: "48. Which responses help organizations manage workplace IT challenges?",
+          options: [
+            "A) Security controls, backups/recovery, training and upskilling, testing and monitoring, and responsible work practices",
+            "B) Ignoring system alerts and skipping backups",
+            "C) Disabling passwords to save time",
+            "D) Refusing software updates permanently"
+          ],
+          answer: 0,
+          explain: "Organizations respond using security controls, backups/recovery, training/upskilling, testing/monitoring, and responsible work practices."
+        },
+        {
+          topic: "Topic 3: IT in the Workplace (Questions 35-50)",
+          q: "49. Which emerging trends and CS opportunities are listed near the end of the workplace IT deck?",
+          options: [
+            "A) AI/ML, Cloud, IoT, Blockchain, Big Data, and AR / Robotics",
+            "B) Typewriters, floppy disks, and dial-up modems",
+            "C) Vacuum tubes and punch cards",
+            "D) Fax machines and pagers"
+          ],
+          answer: 0,
+          explain: "The emerging trends slide lists AI/ML, Cloud, IoT, Blockchain, Big Data, and AR / Robotics."
+        },
+        {
+          topic: "Topic 3: IT in the Workplace (Questions 35-50)",
+          q: "50. What is required for effective remote or hybrid work according to the lecture?",
+          options: [
+            "A) Reliable Internet, collaboration tools, secure access, endpoint protection, clear communication, teamwork, accountability, and data protection",
+            "B) Working completely offline with no communication",
+            "C) Sharing account passwords with everyone on the team",
+            "D) Turning off all security controls while working from home"
+          ],
+          answer: 0,
+          explain: "Remote and hybrid work depend on reliable Internet, collaboration tools, secure access, endpoint protection, communication, teamwork, accountability, and data protection."
+        }
+      ];
+
+      const quizContainer = document.getElementById("quizContainer");
+      const quizForm = document.getElementById("quizForm");
+      const scoreBanner = document.getElementById("scoreBanner");
+      const scoreText = document.getElementById("scoreText");
+      const scoreSubtext = document.getElementById("scoreSubtext");
+      const resetBtn = document.getElementById("resetBtn");
+
+      function renderQuiz() {
+        let lastTopic = "";
+        quizContainer.innerHTML = "";
+
+        quizData.forEach(function (item, idx) {
+          if (item.topic !== lastTopic) {
+            const h2 = document.createElement("h2");
+            h2.className = "topic-heading";
+            h2.textContent = item.topic;
+            quizContainer.appendChild(h2);
+            lastTopic = item.topic;
+          }
+
+          const card = document.createElement("div");
+          card.className = "question-card";
+          card.setAttribute("data-index", String(idx));
+
+          const qText = document.createElement("div");
+          qText.className = "question-text";
+          qText.textContent = item.q;
+          card.appendChild(qText);
+
+          const optionsDiv = document.createElement("div");
+          optionsDiv.className = "options";
+
+          item.options.forEach(function (opt, optIdx) {
+            const label = document.createElement("label");
+            label.className = "option-label";
+            label.setAttribute("data-opt-index", String(optIdx));
+
+            const radio = document.createElement("input");
+            radio.type = "radio";
+            radio.name = "q" + idx;
+            radio.value = String(optIdx);
+
+            const span = document.createElement("span");
+            span.textContent = opt;
+
+            label.appendChild(radio);
+            label.appendChild(span);
+            optionsDiv.appendChild(label);
+          });
+
+          const explainDiv = document.createElement("div");
+          explainDiv.className = "explanation";
+          explainDiv.textContent = item.explain;
+
+          card.appendChild(optionsDiv);
+          card.appendChild(explainDiv);
+          quizContainer.appendChild(card);
+        });
+      }
+
+      function gradeQuiz(event) {
+        if (event) {
+          event.preventDefault();
+        }
+        let score = 0;
+        const cards = document.querySelectorAll(".question-card");
+
+        cards.forEach(function (card) {
+          const idx = Number(card.getAttribute("data-index"));
+          const correctIdx = quizData[idx].answer;
+          const selected = card.querySelector('input[name="q' + idx + '"]:checked');
+          const labels = card.querySelectorAll(".option-label");
+          const explain = card.querySelector(".explanation");
+
+          labels.forEach(function (lbl) {
+            lbl.classList.remove("correct", "incorrect");
+            if (Number(lbl.getAttribute("data-opt-index")) === correctIdx) {
+              lbl.classList.add("correct");
+            }
+          });
+
+          if (selected) {
+            const chosenIdx = Number(selected.value);
+            if (chosenIdx === correctIdx) {
+              score += 1;
+            } else if (labels[chosenIdx]) {
+              labels[chosenIdx].classList.add("incorrect");
+            }
+          }
+
+          if (explain) {
+            explain.classList.add("visible");
+          }
+        });
+
+        const pct = Math.round((score / quizData.length) * 100);
+        scoreText.textContent = "Score: " + score + " / " + quizData.length + " (" + pct + "%)";
+        scoreSubtext.textContent =
+          pct >= 80
+            ? "Great job! You have a strong grasp of these topics."
+            : "Good review session—check the explanations below for any missed items.";
+        scoreBanner.classList.add("visible");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      quizForm.addEventListener("submit", gradeQuiz);
+
+      resetBtn.addEventListener("click", function () {
+        quizForm.reset();
+        scoreBanner.classList.remove("visible");
+        document.querySelectorAll(".option-label").forEach(function (lbl) {
+          lbl.classList.remove("correct", "incorrect");
+        });
+        document.querySelectorAll(".explanation").forEach(function (exp) {
+          exp.classList.remove("visible");
+        });
+      });
+
+      renderQuiz();
+    })();
+  </script>
+</body>
+</html>
